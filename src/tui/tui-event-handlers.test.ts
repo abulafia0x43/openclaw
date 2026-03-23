@@ -630,4 +630,57 @@ describe("tui-event-handlers: handleAgentEvent", () => {
 
     expect(loadHistory).toHaveBeenCalledTimes(1);
   });
+
+  it("shows exec approval requests for the current session", () => {
+    const { state, chatLog, tui, handleExecApprovalRequested } = createHandlersHarness();
+
+    handleExecApprovalRequested({
+      id: "approval-12345678",
+      request: {
+        sessionKey: state.currentSessionKey,
+        commandPreview: "/usr/bin/pwd",
+        cwd: "/home/louis/.openclaw/workspace",
+      },
+    });
+
+    expect(chatLog.addSystem).toHaveBeenCalledTimes(1);
+    const [rendered] = chatLog.addSystem.mock.calls[0] ?? [];
+    expect(String(rendered)).toContain("Exec approval required");
+    expect(String(rendered)).toContain("/usr/bin/pwd");
+    expect(String(rendered)).toContain("/approve approval-12345678 allow-once");
+    expect(tui.requestRender).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores exec approval requests for other sessions", () => {
+    const { chatLog, tui, handleExecApprovalRequested } = createHandlersHarness();
+
+    handleExecApprovalRequested({
+      id: "approval-other",
+      request: {
+        sessionKey: "agent:main:other",
+        commandPreview: "/usr/bin/pwd",
+      },
+    });
+
+    expect(chatLog.addSystem).not.toHaveBeenCalled();
+    expect(tui.requestRender).not.toHaveBeenCalled();
+  });
+
+  it("shows exec approval resolutions for the current session", () => {
+    const { state, chatLog, tui, handleExecApprovalResolved } = createHandlersHarness();
+
+    handleExecApprovalResolved({
+      id: "approval-12345678",
+      decision: "allow-once",
+      resolvedBy: "openclaw-tui",
+      request: {
+        sessionKey: state.currentSessionKey,
+      },
+    });
+
+    expect(chatLog.addSystem).toHaveBeenCalledWith(
+      "Exec approval allow-once by openclaw-tui: approval-12345678",
+    );
+    expect(tui.requestRender).toHaveBeenCalledTimes(1);
+  });
 });

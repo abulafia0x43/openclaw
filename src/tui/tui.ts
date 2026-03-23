@@ -704,7 +704,13 @@ export async function runTui(opts: TuiOptions) {
     abortActive,
   } = sessionActions;
 
-  const { handleChatEvent, handleAgentEvent, handleBtwEvent } = createEventHandlers({
+  const {
+    handleChatEvent,
+    handleAgentEvent,
+    handleBtwEvent,
+    handleExecApprovalRequested,
+    handleExecApprovalResolved,
+  } = createEventHandlers({
     chatLog,
     btw,
     tui,
@@ -852,6 +858,12 @@ export async function runTui(opts: TuiOptions) {
     }
     if (evt.event === "agent") {
       handleAgentEvent(evt.payload);
+    }
+    if (evt.event === "exec.approval.requested") {
+      handleExecApprovalRequested(evt.payload);
+    }
+    if (evt.event === "exec.approval.resolved") {
+      handleExecApprovalResolved(evt.payload);
     }
   };
 

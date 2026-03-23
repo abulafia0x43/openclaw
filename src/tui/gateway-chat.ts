@@ -157,6 +157,7 @@ export class GatewayChatClient {
       clientVersion: VERSION,
       platform: process.platform,
       mode: GATEWAY_CLIENT_MODES.UI,
+      scopes: ["operator.approvals"],
       caps: [GATEWAY_CLIENT_CAPS.TOOL_EVENTS],
       instanceId: randomUUID(),
       minProtocol: PROTOCOL_VERSION,

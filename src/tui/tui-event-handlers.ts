@@ -41,6 +41,25 @@ type EventHandlerContext = {
   clearLocalBtwRunIds?: () => void;
 };
 
+type ExecApprovalRequestPayload = {
+  command?: string;
+  commandPreview?: string | null;
+  cwd?: string | null;
+  sessionKey?: string | null;
+};
+
+type ExecApprovalRequestedEvent = {
+  id?: string;
+  request?: ExecApprovalRequestPayload;
+};
+
+type ExecApprovalResolvedEvent = {
+  id?: string;
+  decision?: string;
+  resolvedBy?: string | null;
+  request?: ExecApprovalRequestPayload;
+};
+
 export function createEventHandlers(context: EventHandlerContext) {
   const {
     chatLog,
@@ -404,5 +423,70 @@ export function createEventHandlers(context: EventHandlerContext) {
     tui.requestRender();
   };
 
-  return { handleChatEvent, handleAgentEvent, handleBtwEvent };
+  const handleExecApprovalRequested = (payload: unknown) => {
+    if (!payload || typeof payload !== "object") {
+      return;
+    }
+    const evt = payload as ExecApprovalRequestedEvent;
+    syncSessionKey();
+    const request = evt.request ?? {};
+    const sessionKey = typeof request.sessionKey === "string" ? request.sessionKey : undefined;
+    if (sessionKey && !isSameSessionKey(sessionKey, state.currentSessionKey)) {
+      return;
+    }
+    const approvalId = typeof evt.id === "string" ? evt.id.trim() : "";
+    if (!approvalId) {
+      return;
+    }
+    const commandText =
+      typeof request.commandPreview === "string" && request.commandPreview.trim()
+        ? request.commandPreview.trim()
+        : typeof request.command === "string" && request.command.trim()
+          ? request.command.trim()
+          : "(command unavailable)";
+    const lines = [
+      `🔒 Exec approval required`,
+      `Command: ${commandText}`,
+      ...(typeof request.cwd === "string" && request.cwd.trim()
+        ? [`CWD: ${request.cwd.trim()}`]
+        : []),
+      `Approve once: /approve ${approvalId} allow-once`,
+      `Always allow: /approve ${approvalId} allow-always`,
+      `Deny: /approve ${approvalId} deny`,
+    ];
+    chatLog.addSystem(lines.join("\n"));
+    tui.requestRender();
+  };
+
+  const handleExecApprovalResolved = (payload: unknown) => {
+    if (!payload || typeof payload !== "object") {
+      return;
+    }
+    const evt = payload as ExecApprovalResolvedEvent;
+    syncSessionKey();
+    const request = evt.request ?? {};
+    const sessionKey = typeof request.sessionKey === "string" ? request.sessionKey : undefined;
+    if (sessionKey && !isSameSessionKey(sessionKey, state.currentSessionKey)) {
+      return;
+    }
+    const approvalId = typeof evt.id === "string" ? evt.id.trim() : "";
+    const decision = typeof evt.decision === "string" ? evt.decision.trim() : "";
+    if (!approvalId || !decision) {
+      return;
+    }
+    const resolvedBy =
+      typeof evt.resolvedBy === "string" && evt.resolvedBy.trim()
+        ? ` by ${evt.resolvedBy.trim()}`
+        : "";
+    chatLog.addSystem(`Exec approval ${decision}${resolvedBy}: ${approvalId}`);
+    tui.requestRender();
+  };
+
+  return {
+    handleChatEvent,
+    handleAgentEvent,
+    handleBtwEvent,
+    handleExecApprovalRequested,
+    handleExecApprovalResolved,
+  };
 }
