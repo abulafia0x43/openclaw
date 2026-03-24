@@ -21,6 +21,11 @@ x-i18n:
 
 - TUI 指南：[TUI](/web/tui)
 
+说明：
+
+- 默认启用最小化的 vi 风格输入键位。
+- 如果想切回标准键位，可在启动前设置 `OPENCLAW_TUI_KEYMAP=default`（也接受 `standard` / `emacs`）。
+
 ## 示例
 
 ```bash

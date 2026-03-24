@@ -230,6 +230,42 @@ describe("resolveCtrlCAction", () => {
   });
 });
 
+describe("resolveTuiKeymap", () => {
+  it("defaults to the vi keymap", () => {
+    expect(resolveTuiKeymap({} as NodeJS.ProcessEnv)).toBe("vi");
+  });
+
+  it("enables vi mode for vi-like env values", () => {
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "vi" } as NodeJS.ProcessEnv)).toBe("vi");
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "VIM" } as NodeJS.ProcessEnv)).toBe("vi");
+  });
+
+  it("allows opting back into the standard keymap", () => {
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "default" } as NodeJS.ProcessEnv)).toBe(
+      "default",
+    );
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "standard" } as NodeJS.ProcessEnv)).toBe(
+      "default",
+    );
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "emacs" } as NodeJS.ProcessEnv)).toBe("default");
+  });
+
+  it("falls back to vi for unknown keymap values", () => {
+    expect(resolveTuiKeymap({ OPENCLAW_TUI_KEYMAP: "weird" } as NodeJS.ProcessEnv)).toBe("vi");
+  });
+});
+
+describe("resolveTuiInputModeLabel", () => {
+  it("omits the label for the default keymap", () => {
+    expect(resolveTuiInputModeLabel({ keymap: "default" })).toBeNull();
+  });
+
+  it("shows the current vi mode when vi keymap is enabled", () => {
+    expect(resolveTuiInputModeLabel({ keymap: "vi", viMode: "insert" })).toBe("vi:insert");
+    expect(resolveTuiInputModeLabel({ keymap: "vi", viMode: "normal" })).toBe("vi:normal");
+  });
+});
+
 describe("TUI shutdown safety", () => {
   it("treats setRawMode EBADF errors as ignorable", () => {
     expect(isIgnorableTuiStopError(new Error("setRawMode EBADF"))).toBe(true);

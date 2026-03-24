@@ -79,6 +79,26 @@ Use `--password` if your Gateway uses password auth.
 - Ctrl+O: toggle tool output expansion
 - Ctrl+T: toggle thinking visibility (reloads history)
 
+## Vi keymap
+
+A minimal vi-style keymap is enabled by default for the input editor.
+
+If you want the previous standard keymap instead, opt out before launching the TUI:
+
+```bash
+OPENCLAW_TUI_KEYMAP=default openclaw tui
+```
+
+`OPENCLAW_TUI_KEYMAP=standard` and `OPENCLAW_TUI_KEYMAP=emacs` are also accepted.
+
+Behavior:
+
+- Starts in insert mode for chat-friendly typing
+- `Esc` switches to normal mode
+- In normal mode: `h`, `j`, `k`, `l`, `w`, `b`, `0`, `$`, `x`, `u`, `i`, `a`, `o`
+- `Enter` in normal mode submits the current message
+- The footer shows the current mode as `vi:insert` or `vi:normal`
+
 ## Slash commands
 
 Core:

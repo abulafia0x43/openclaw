@@ -18,6 +18,7 @@ Notes:
 
 - `tui` resolves configured gateway auth SecretRefs for token/password auth when possible (`env`/`file`/`exec` providers).
 - When launched from inside a configured agent workspace directory, TUI auto-selects that agent for the session key default (unless `--session` is explicitly `agent:<id>:...`).
+- The minimal vi-style input keymap is enabled by default. Set `OPENCLAW_TUI_KEYMAP=default` (or `standard` / `emacs`) before launch to use the standard keymap instead.
 
 ## Examples
 

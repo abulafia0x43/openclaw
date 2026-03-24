@@ -86,6 +86,26 @@ openclaw tui --url ws://<host>:<port> --token <gateway-token>
 - Ctrl+O：切换工具输出展开
 - Ctrl+T：切换思考可见性（重新加载历史）
 
+## Vi 键位
+
+输入编辑器默认启用最小化的 vi 风格键位。
+
+如果你想改回之前的标准键位，可在启动 TUI 前这样设置：
+
+```bash
+OPENCLAW_TUI_KEYMAP=default openclaw tui
+```
+
+也接受 `OPENCLAW_TUI_KEYMAP=standard` 和 `OPENCLAW_TUI_KEYMAP=emacs`。
+
+行为：
+
+- 默认从插入模式开始，更适合聊天输入
+- `Esc` 切换到普通模式
+- 在普通模式下可用：`h`、`j`、`k`、`l`、`w`、`b`、`0`、`$`、`x`、`u`、`i`、`a`、`o`
+- 普通模式下按 `Enter` 会提交当前消息
+- 页脚会显示当前模式：`vi:insert` 或 `vi:normal`
+
 ## 斜杠命令
 
 核心：
