@@ -57,9 +57,20 @@ export class ChatLog extends Container {
     this.btwMessage = null;
   }
 
-  addSystem(text: string) {
+  addSystem(text: string, opts?: { tone?: "system" | "accent" | "header" | "error" | "success" }) {
     this.append(new Spacer(1));
-    this.append(new Text(theme.system(text), 1, 0));
+    const tone = opts?.tone ?? "system";
+    const render =
+      tone === "accent"
+        ? theme.accent
+        : tone === "header"
+          ? theme.header
+          : tone === "error"
+            ? theme.error
+            : tone === "success"
+              ? theme.success
+              : theme.system;
+    this.append(new Text(render(text), 1, 0));
   }
 
   addUser(text: string) {

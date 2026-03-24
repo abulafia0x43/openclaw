@@ -10,7 +10,10 @@ type EventHandlerChatLog = {
     result: unknown,
     options?: { partial?: boolean; isError?: boolean },
   ) => void;
-  addSystem: (text: string) => void;
+  addSystem: (
+    text: string,
+    opts?: { tone?: "system" | "accent" | "header" | "error" | "success" },
+  ) => void;
   updateAssistant: (text: string, runId: string) => void;
   finalizeAssistant: (text: string, runId: string) => void;
   dropAssistant: (runId: string) => void;
@@ -456,7 +459,7 @@ export function createEventHandlers(context: EventHandlerContext) {
       `  Deny: /approve ${shortApprovalId} deny`,
       ...(shortApprovalId !== approvalId ? [`  Full id if needed: ${approvalId}`] : []),
     ];
-    chatLog.addSystem(lines.join("\n"));
+    chatLog.addSystem(lines.join("\n"), { tone: "accent" });
     tui.requestRender();
   };
 

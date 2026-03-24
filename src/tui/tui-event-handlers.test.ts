@@ -644,7 +644,8 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     });
 
     expect(chatLog.addSystem).toHaveBeenCalledTimes(1);
-    const [rendered] = chatLog.addSystem.mock.calls[0] ?? [];
+    const [rendered, opts] = chatLog.addSystem.mock.calls[0] ?? [];
+    expect(opts).toEqual({ tone: "accent" });
     expect(String(rendered)).toContain("Exec approval required");
     expect(String(rendered)).toContain("/usr/bin/pwd");
     expect(String(rendered)).toContain("▶ Default: /approve approval allow-once");
