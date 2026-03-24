@@ -731,6 +731,7 @@ export async function runTui(opts: TuiOptions) {
       return;
     }
     exitRequested = true;
+    editor.resetCursorShape();
     client.stop();
     stopTuiSafely(() => tui.stop());
     process.exit(0);
