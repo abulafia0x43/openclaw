@@ -647,7 +647,10 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     const [rendered] = chatLog.addSystem.mock.calls[0] ?? [];
     expect(String(rendered)).toContain("Exec approval required");
     expect(String(rendered)).toContain("/usr/bin/pwd");
-    expect(String(rendered)).toContain("/approve approval-12345678 allow-once");
+    expect(String(rendered)).toContain("▶ Default: /approve approval allow-once");
+    expect(String(rendered)).toContain("Always allow: /approve approval allow-always");
+    expect(String(rendered)).toContain("Deny: /approve approval deny");
+    expect(String(rendered)).toContain("Full id if needed: approval-12345678");
     expect(tui.requestRender).toHaveBeenCalledTimes(1);
   });
 
@@ -679,7 +682,7 @@ describe("tui-event-handlers: handleAgentEvent", () => {
     });
 
     expect(chatLog.addSystem).toHaveBeenCalledWith(
-      "Exec approval allow-once by openclaw-tui: approval-12345678",
+      "Exec approval allow-once by openclaw-tui: approval",
     );
     expect(tui.requestRender).toHaveBeenCalledTimes(1);
   });

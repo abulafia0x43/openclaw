@@ -438,6 +438,7 @@ export function createEventHandlers(context: EventHandlerContext) {
     if (!approvalId) {
       return;
     }
+    const shortApprovalId = approvalId.slice(0, 8);
     const commandText =
       typeof request.commandPreview === "string" && request.commandPreview.trim()
         ? request.commandPreview.trim()
@@ -450,9 +451,10 @@ export function createEventHandlers(context: EventHandlerContext) {
       ...(typeof request.cwd === "string" && request.cwd.trim()
         ? [`CWD: ${request.cwd.trim()}`]
         : []),
-      `Approve once: /approve ${approvalId} allow-once`,
-      `Always allow: /approve ${approvalId} allow-always`,
-      `Deny: /approve ${approvalId} deny`,
+      `▶ Default: /approve ${shortApprovalId} allow-once`,
+      `  Always allow: /approve ${shortApprovalId} allow-always`,
+      `  Deny: /approve ${shortApprovalId} deny`,
+      ...(shortApprovalId !== approvalId ? [`  Full id if needed: ${approvalId}`] : []),
     ];
     chatLog.addSystem(lines.join("\n"));
     tui.requestRender();
@@ -474,11 +476,12 @@ export function createEventHandlers(context: EventHandlerContext) {
     if (!approvalId || !decision) {
       return;
     }
+    const shortApprovalId = approvalId.slice(0, 8);
     const resolvedBy =
       typeof evt.resolvedBy === "string" && evt.resolvedBy.trim()
         ? ` by ${evt.resolvedBy.trim()}`
         : "";
-    chatLog.addSystem(`Exec approval ${decision}${resolvedBy}: ${approvalId}`);
+    chatLog.addSystem(`Exec approval ${decision}${resolvedBy}: ${shortApprovalId}`);
     tui.requestRender();
   };
 
